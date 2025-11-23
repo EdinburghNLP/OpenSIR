@@ -1,5 +1,4 @@
 # OpenSIR: Open-Ended Self-Improving Reasoner
-SONER
 
 
 ## Setup
