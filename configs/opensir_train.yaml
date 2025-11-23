@@ -1,0 +1,93 @@
+# Model arguments
+model_name_or_path: meta-llama/Llama-3.2-3B-Instruct
+model_revision: main
+torch_dtype: bfloat16
+attn_implementation: flash_attention_2
+
+# Data training arguments
+dataset_name: datasets
+dataset_prompt_column: problem
+system_prompt: "You are a helpful AI Assistant, designed to provided well-reasoned and detailed responses. You FIRST think about the reasoning process as an internal monologue and then provide the user with the answer. The reasoning process and the final answer MUST BE enclosed within <think> and </think> tags, and within <answer> and </answer> tags respectively."
+
+# GRPO trainer config
+bf16: true
+use_vllm: true
+vllm_gpu_memory_utilization: 0.85
+do_eval: false
+gradient_accumulation_steps: 8
+gradient_checkpointing: true
+gradient_checkpointing_kwargs:
+  use_reentrant: false
+hub_model_id: Opensir_Llama-3.2-3B-Instruct
+hub_strategy: every_save
+beta: 1e-4 # KL coefficient
+learning_rate: 3e-7
+log_completions: true
+log_level: info
+logging_first_step: true
+logging_steps: 2
+logging_strategy: steps
+# lr_scheduler_type: cosine
+lr_scheduler_type: constant_with_warmup
+max_prompt_length: 1024
+max_completion_length: 2048
+max_grad_norm: 0.5
+max_steps: 200
+num_generations: 8
+temperature: 1.0 #  Temperature for sampling, default is 0.9
+num_iterations: 1
+num_train_epochs: 1
+output_dir: saves/Opensir_Llama-3.2-3B-Instruct
+run_name: Opensir_Llama-3.2-3B-Instruct
+overwrite_output_dir: true
+per_device_eval_batch_size: 8
+per_device_train_batch_size: 8
+push_to_hub: false
+report_to:
+- wandb
+wandb_project: open-r1
+save_strategy: "steps"
+save_steps: 25
+seed: 42
+warmup_steps: 25
+benchmarks:
+- math_500_8k
+- aime24_8k
+- gsm8k_8k
+
+# Scoring parameters
+solve_rate_lower_limit: 0.5
+solve_rate_upper_limit: 0.9
+diversity_score_weight: 1.0
+difficulty_score_weight: 1.0
+
+# Teacher parameters
+embedding_port_number: 8001
+num_teacher_generations_to_train: 8
+teacher_generation_upscale_ratio: 4
+num_teacher_generations: 8
+teacher_reward_funcs:
+- solvability
+- diversity
+- format
+- response_length
+teacher_reward_weights:
+- 1.0
+- 1.0
+- 0.1
+- 1.0
+initial_examples_path: src/opensir/data/initial_data.jsonl
+example_pool_append_strategy: all_legal
+teacher_advantage_global_mean: false
+
+# Student parameters
+num_student_generations: 8
+num_student_generations_to_train: 8
+student_reward_funcs: 
+- accuracy
+- format
+student_reward_weights:
+- 1.0
+- 0.1
+student_train_sampling_strategy: top
+

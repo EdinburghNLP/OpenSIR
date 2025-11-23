@@ -176,6 +176,9 @@ wandb/
 logs/
 eval_results/
 results/
-
+saves/
+docs/
+outputs/
+tests/
 .vscode/
 .python-version
